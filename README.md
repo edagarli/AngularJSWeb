@@ -8,19 +8,19 @@ AngularJS是一款来自Google的前端JS框架，它的核心特性有：MVC、
 本书对AngularJS框架的核心特性做了全面的介绍，包括常用的开发工具和开发环境。作为国内第一本关于AngularJS的书籍，本书是学习AngularJS的必备入门工具。
 
 
-*前言 . vii
-**第1 章 AngularJS 简介 . 1
-一些概念 . 2
-客户端模板  2
-Model View Controller（MVC） . 3
-数据绑定  4
-依赖注入  5
-指令  6
-实例：购物车 . 6
-接下来 . 9
-第2 章 AngularJS 应用骨架 .11
-调用Angular . 11
-加载脚本  11
+#前言 . vii
+##第1 章 AngularJS 简介 . 1
+###一些概念 . 2
+###客户端模板  2
+###Model View Controller（MVC） . 3
+###数据绑定  4
+###依赖注入  5
+###指令  6
+###实例：购物车 . 6
+###接下来 . 9
+##第2 章 AngularJS 应用骨架 .11
+###调用Angular . 11
+###加载脚本  11
 使用ng-app 声明Angular 的边界  12
 Model View Controller  12
 模板和数据绑定  15
