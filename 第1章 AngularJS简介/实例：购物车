@@ -1,0 +1,81 @@
+我们来看一个稍微大一点的例子，它将会展示Angular的更多特性。想象一下，我们打算构建一款购物应用，需要在应用中的某个地方展示用户的购物车，并且用户能够对其进行编辑。我们直接跳到购物车这个部分：
+<html ng-app='myApp'>
+<head>
+  <title>Your Shopping Cart</title>
+</head>
+<body ng-controller='CartController'>
+  <h1>Your Order</h1>
+  <div ng-repeat='item in items'>
+    <span>{{item.title}}</span>
+    <input ng-model='item.quantity'>
+    <span>{{item.price | currency}}</span>
+    <span>{{item.price * item.quantity | currency}}</span>
+    <button ng-click="remove($index)">Remove</button>
+  </div>
+  <script src="angular.js"></script>
+  <script>
+    function CartController($scope) {
+      $scope.items = [
+        {title: 'Paint pots', quantity: 8, price: 3.95},
+        {title: 'Polka dots', quantity: 17, price: 12.95},
+        {title: 'Pebbles', quantity: 5, price: 6.95}
+      ];
+      $scope.remove = function(index) {
+        $scope.items.splice(index, 1);
+      }
+    }
+  </script>
+  </body>
+</html>
+
+最终UI截屏如图1-4所示。
+
+ 
+
+下面是对这段代码的一个概要解释，本书后续的内容将会对此做更深入的解析。
+
+我们从头开始：
+<html ng-app>
+
+ng-app 属性将用来告诉Angular页面中的哪一部分需要接受它的管理。既然我们把这个属性放在<html> 标签上，那么就是在告诉Angular，我们希望它管理整个页面。通常情况下你只需要这么做就可以了，但是，如果你打算把Angular集成到一个现有的应用中，而这个应用使用了其他的方式来管理页面，那么你可能需要把ng-app属性放到应用中的一个<div> 上。
+<body ng-controller='CartController'>
+
+在Angular中，你将会使用一种叫做控制器的JavaScript类来管理页面中的区域。在body标签中引入一个控制器，就是在声明CartController将会管理介于<body> 和
+</body>之间的所有内容。
+<div ng-repeat='item in items'>
+
+ng-repeat 的意思是，对于items 数组中的每一个元素，都把<div>中的DOM结构复制一份（包括div自身）。对于div的每一份拷贝，都会把一个叫做item 的属性设置给它，这样我们就可以在模板中使用这份拷贝的元素了。如你所见，这样一来就会产生3个<div>，其中分别包含了产品的名称、数量、单价、总价，以及一个可以用来完全删除一个项目的按钮。
+<span>{{item.title}}</span>
+
+正如我们在“Hello,World”那个例子中所展示的，通过{{ }} 进行数据绑定让我们可以把变量的值插入到页面的一部分中，同时能够保证它会自动同步。完整的表达式{{item.title}}将会获取循环中的当前item，然后把这个item的title属性值插入到DOM中。
+<input ng-model='item.quantity'>
+
+定义ng-model 将会在输入框和item.quantity 的值之间创建数据绑定关系。
+
+<span> 里面的{{  }}将会创建一个单向的关系，也就是说“在这里插入一个值”。这正是我们所要达到的效果，但是应用还需要知道用户何时修改了数量，这样它就可以修改总价了。
+
+使用ng-model 我们就可以保持变更与模型同步了。ng-model 声明将会把item.quantity 的值插入文本框中，同时，不管什么时候，只要用户输入了新的数值，它就会自动更新item.quantity 的值。
+<span>{{item.price | currency}}</span>
+<span>{{item.price * item.quantity | currency}}</span>
+
+我们想让单价和总价能够以美元的格式显示。Angular带有一种叫做过滤器（filter）的特性，我们可以用它来转换文本的格式，有一个内置过滤器叫做currency（货币），它可以为我们实现美元格式化。在下一章中我们将会看到关于过滤器的更多内容。
+<button ng-click='remove($index)'>Remove</button>
+
+这个按钮可以让用户从他们的购物车中删除项目，点击产品旁边的Remove 按钮即可，因为我们已经设置好了，点击这个按钮将会调用remove() 函数。同时我们还会把$index 传递过去，$index 包含了ng-repeat 过程中的循环计数，这样一来我们就知道要删除哪一个项目了。
+function CartController($scope) {
+
+CartController将会负责管理购物车的业务逻辑。在函数的形参中放一个$scope 就可以告诉Angular：控制器需要一个叫做$scope 的东西。我们可以通过$scope 把数据绑定到UI中的元素上。
+$scope.items = [
+  {title: 'Paint pots', quantity: 8, price: 3.95},
+  {title: 'Polka dots', quantity: 17, price: 12.95},
+  {title: 'Pebbles', quantity: 5, price: 6.95}
+];
+
+通过定义$scope.items，我们创建了一个虚拟的hash型数据，用来表示用户购物车中的项目集合。我们想让这些项目能够对UI的数据绑定有效，所以我们要把它们设置到$scope 上。
+
+当然，这个例子的真实版本不可能只是在内存里面运行，它还需要与服务端进行交互并正确地把数据持久化。我们将会在后续的章节中讨论这一话题。
+$scope.remove = function(index) {
+  $scope.items.splice(index, 1);
+}
+
+在绑定UI的时候，我们希望remove() 函数也有效，所以我们也需要把它设置到$scope上。对于购物车的纯内存版，remove() 函数可以只从数组中删除元素。由于ng-repeat 所创建的<div>列表都是绑定在数据上的，所以当数组中的项目消失时，这个列表将会自动收缩。记住，无论何时，只要用户点击了Remove按钮，就会从UI中调用remove() 函数。
