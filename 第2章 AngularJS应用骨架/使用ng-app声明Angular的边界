@@ -1,0 +1,15 @@
+你可以用ng-app指令告诉Angular应该管理页面中的哪一块。如果你正在构建一款纯Angular应用，那么你应该把ng-app指令写在<html>标签中，示例如下：
+<htmlng-app>
+…
+</html>
+
+这样就会告诉Angular去管理页面上的所有DOM元素。
+
+如果你有一款现存的应用，该应用正在用其他一些技术（如Java或Rails）来管理DOM，那么你可以让Angular只管理页面中的一部分，只要在页面中放入一些<div>之类的元素即可。
+<html>
+…
+<divng-app>
+…
+</div>
+…
+</html>
