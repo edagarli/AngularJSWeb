@@ -1,0 +1,92 @@
+在很明显，你可以在你的应用中动态地设置CSS类和样式了，只要使用{{ }} 插值语法把它们进行数据绑定即可。你甚至还可以在模板中构造CSS类名的部分匹配方式。例如，如果你想要有条件地禁用某些菜单，你可能会做以下事情来给用户视觉上的提示。
+
+假设有下面这样一段CSS：
+.menu-disabled-true {
+  color: gray;
+}
+
+使用以下模板，你就可以把Death Ray的stun（击晕）功能显示成禁用状态：
+<div ng-controller='DeathrayMenuController'>
+  <ul>
+    <li class='menu-disabled-{{isDisabled}}' ng-click='stun()'>Stun</li>
+    ...
+  </ul>
+<div/>
+
+然后你就可以根据需要，通过控制器来设置isDisabled 属性了：
+function DeathrayMenuController($scope) {
+  $scope.isDisabled = false;
+  $scope.stun = function() {
+    // 击晕目标，然后禁用复活按钮
+    $scope.isDisabled = 'true';
+  };
+}
+
+stun 菜单项上的CSS类将会被设置为menu-disabled- 加上$scope.isDisabled 的值。由于$scope.isDisabled 属性的初始值为false，所以拼接出来的结果就是menu-disabled-false。由于这个结果无法匹配到任何CSS样式，所以不会产生任何效果。当$scope.isDisabled被设置为true时，CSS样式类就变成了menu-disabled-true ，这样就会调用相应的样式让文本变成灰色。
+
+当使用插值的方式绑定内联样式的时候，这一技术同样适用，例如style="{{some expression}}"。
+
+虽然这种方式具有很大灵活性，但是也有一些不利的地方，那就是在构造CSS类名时存在一定程度的间接性。虽然在这个小例子里面很容易理解它，但是当需要同时在模板和JavaScript中使用时，它很快就会变得无法维护，进而无法正确地创建CSS。
+
+正是由于这个原因，Angular提供了ng-class 和ng-style 指令。这两个指令都可以接受一个表达式，表达式执行的结果可能是如下取值之一：
+
+表示CSS类名的字符串，以空格分隔。
+
+CSS类名数组。
+
+CSS类名到布尔值的映射。
+
+我们来想象一下，你现在希望在应用头部的固定位置向用户显示错误和警告信息。使用ng-class 指令，你可以这样做：
+.error {
+  background-color: red;
+}
+.warning {
+  background-color: yellow;
+}
+<div ng-controller='HeaderController'>
+  ...
+  <div ng-class='{error: isError, warning: isWarning}'>{{messageText}}</div>
+  …
+  <button ng-click='showError()'>Simulate Error</button>
+  <button ng-click='showWarning()'>Simulate Warning</button>
+</div>
+function HeaderController($scope) {
+  $scope.isError = false;
+  $scope.isWarning = false;
+  $scope.showError = function() {
+    $scope.messageText = 'This is an error!';
+    $scope.isError = true;
+    $scope.isWarning = false;
+  };
+  $scope.showWarning = function() {
+    $scope.messageText = 'Just a warning.  Please carry on.';
+    $scope.isWarning = true;
+    $scope.isError = false;
+  };
+}
+
+你还可以做一些更炫的事情，例如把表格中被选中的行进行高亮显示。比方说我们正在构建一个餐馆名录，而且想把用户点击的那一行进行高亮显示。
+
+在CSS中，我们可以为需要高亮显示的行设置一个样式：
+.selected {
+  background-color: lightgreen;
+}
+
+在模板中，我们把ng-class 设置为{selected:  $index==selectedRow}。这样做的效果就是，当模型属性selectedRow 的值等于ng-repeat 中的$index 时，s e l e c t e d 样式就会被设置到那一行上。我们还会设置一个ng-click 指令，用来告诉控制器用户点击了哪一行：
+<table ng-controller='RestaurantTableController'>
+  <tr ng-repeat='restaurant in directory' ng-lick='selectRestaurant($index)'
+      ng-class='{selected: $index==selectedRow}'>
+    <td>{{restaurant.name}}</td>
+    <td>{{restaurant.cuisine}}</td>
+  </tr>
+</table>
+
+在我们的JavaScript中只是创建了一些虚拟的餐馆，然后创建了selectRow函数。
+function RestaurantTableController($scope) {
+  $scope.directory = [{name:'The Handsome Heifer', cuisine:'BBQ'},
+                      {name:'Green's Green Greens', cuisine:'Salads'},
+                      {name:'House of Fine Fish', cuisine:'Seafood'}];
+  $scope.selectRestaurant = function(row) {
+    $scope.selectedRow = row;
+  };
+}
