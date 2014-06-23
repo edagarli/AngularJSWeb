@@ -1,0 +1,76 @@
+在第1 章中，我们曾经提到过Angular支持Model  View  Controller风格的应用设计。尽管设计Angular应用具有很大的灵活性，但是以下这些风格你将会经常涉及：
+
+用来容纳数据的模型，模型代表应用当前的状态。
+
+用来展示数据的一些视图。
+
+用来管理模型和视图之间关系的一些控制器。
+
+你将会使用对象的属性来创建数据模型，甚至只用基本数据类型来存储数据。模型属性并没有什么特殊的东西。如果你想要给用户展示一些文本，你可以使用字符串，示例如下：
+var someText = 'You have started your journey.';
+
+你可以编写一个HTML页面来创建视图，然后把它和你模型中的数据融合起来。正如我们前面所看到的，你可以在D O M 中插入占位符，然后像下面这样设置其中的文本：
+<p>{{someText}}</p>
+
+我们把这叫做双花括号插值语法，因为它可以把新的内容插入到现有的模板中。
+
+控制器就是你所编写的类或者类型，它的作用是告诉Angular该模型是由哪些对象或者基本数据构成的，只要把这些对象或者基本数据设置到$scope 对象上即可，$scope 对象会被传递给控制器：
+function TextController($scope) {
+  $scope.someText = someText;
+}
+
+把以上所有东西整合起来，我们就获得了如下内容：
+<html ng-app>
+<body ng-controller="TextController">
+  <p>{{someText}}</p>
+  <script
+      src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js">
+  </script>
+  <script>
+    function TextController($scope) {
+      $scope.someText = 'You have started your journey.';
+    }
+  </script>
+</body>
+</html>
+
+把以上内容加载到浏览器中，你将会看到：
+You have started your journey.
+
+在很简单的情况下，以上使用基本数据类型的模型工作得很好，但是对于大多数应用来说，你都需要创建模型对象类来容纳你的数据。我们来创建一个messages模型对象，然后用它来存储someText 属性。所以模型不再是以下内容：
+var someText = 'You have started your journey.';
+
+而会这样编写：
+var messages = {};
+messages.someText = 'You have started your journey.';
+function TextController($scope) {
+  $scope.messages = messages;
+}
+
+然后在你的模板中这样使用：
+<p>{{messages.someText}}</p>
+
+在稍后讨论$scope对象的时候我们将会看到，像这样创建模型对象的方式可以避免一些非预期的行为，这些行为可能是由$scope 对象中的原型继承机制所导致的。
+
+在上一个例子中，我们在全局作用域中创建了TextController。虽然对于示例代码来说，这没有什么问题，但是其实定义控制器的正确方式是，把它定义成模块的一部分，控制器可以为应用里面相关的部分提供命名空间机制。修改之后的代码看起来就像下面这样：
+<html ng-app='myApp'>
+<body ng-controller='TextController'>
+  <p>{{someText.message}}</p>
+<script
+    src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js">
+</script>
+<script>
+  var myAppModule = angular.module('myApp', []);
+  myAppModule.controller('TextController',
+      function($scope) {
+    var someText = {};
+    someText.message = 'You have started your journey.';
+    $scope.someText = someText;
+  });
+</script>
+</body>
+</html>
+
+在这个版本中，我们把ng-app属性设置成了模块的名称myApp。然后我们再调用ngular对象创建了一个名为myApp 的模块，并且把控制器函数传递给了myApp模块的controller函数。
+
+稍后我们就会来解释什么是模块以及为什么要使用模块之类的问题。现在你只要记住，把东西从全局命名空间中隔离开是一件非常好的事情，而模块机制可以帮助我们实现这一点。
