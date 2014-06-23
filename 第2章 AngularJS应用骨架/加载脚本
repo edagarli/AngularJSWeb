@@ -1,0 +1,8 @@
+加载类库的操作非常简单，与其他JavaScript类库遵循同样的规则。你可以从Google的内容分发网络（CDN）中加载类库，示例如下：
+<script
+src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js">
+</script>
+
+我们推荐你使用Google的CDN，Google的服务器非常快，并且可以在多个应用之间缓存脚本库。也就是说，如果你的用户有多款应用使用了Angular，类库只要下载一次就可以了。同时，如果用户访问了其他站点，而该站点使用了Google的CDN链接来获取Angular库，那么用户在访问你的站点时，就不需要再次下载Angular库了。
+
+如果你更喜欢使用本地（或者其他任何地方）的主机，当然也可以，只需要在src属性中指定正确的地址即可。
