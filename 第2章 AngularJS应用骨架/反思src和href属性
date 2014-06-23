@@ -1,0 +1,7 @@
+当在<img>或者<a>标签上进行数据绑定时，在src或者href属性上简单使用{{ }}无法很好地运行。由于浏览器会优先使用并行的方式来加载图片和其他内容，所以Angular没有机会拦截到数据绑定请求。<img> 标签最自然的用法是：
+<img src="/images/cats/{{favoriteCat}}">
+
+但其实，这里应该使用ng-src 指令，你的模板应该写成这样：
+<img ng-src="/images/cats/{{favoriteCat}}">
+类似地，对于<a> 标签，应该使用ng-href指令：
+<a ng-href="/shop/category={{numberOfBalloons}}">some text</a>
