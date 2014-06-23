@@ -1,0 +1,41 @@
+多页面w e b 应用会在服务端创建HTML，把HTML和数据装配并混合起来，然后再把生成的页面发送到浏览器中。在某种程度上，大部分单页面应用——也叫做AJAX应用——也会做同样的事情。在这一方面，Angular的处理方式完全不同，在Angular中，模板和数据都会发送到浏览器中，然后在客户端进行装配。这样一来，服务器的角色就变成了仅仅为这些模板提供一些静态的资源，然后为这些模板提供所需要的正确数据。
+
+我们来看一个例子，看看在Angular中浏览器是如何把数据和模板装配起来的。我们会例行公事地写一个“Hello,   World”示例，但是不会把“Hello,   World”作为一行完整的字符串打印出来，而会把打招呼用的单词“Hello”构造成一个数据，然后再在后面修改这个单词。
+
+为了实现这一功能，我们把模板创建在hello.html 中：
+<html ng-app>
+<head>
+  <script src="angular.js"></script>
+  <script src="controllers.js"></script>
+</head>
+<body>
+  <div ng-controller='HelloController'>
+    <p>{{greeting.text}}, World</p>
+  </div>
+</body>
+</html>
+
+同时我们的应用逻辑写在controllers.js 中：
+function HelloController($scope) {
+  $scope.greeting = { text: 'Hello' };
+}
+
+使用任意浏览器打开hello.html，然后我们就可以看到如图1-1所示的效果：
+
+ 
+
+与目前广泛使用的一些方法相比，这里有一些非常有趣的东西需要注意：
+
+HTML里面没有class或者ID来标记在哪里添加事件监听器。
+
+当HelloController把greeting.text 设置成单词Hello的时候，我们没有必要注册任何事件监听器或者编写任何回调函数。
+
+HelloController只是一个普通的JavaScript类，并且不需要继承Angular所提供的任何东西。
+
+HelloController可以获取到它所需要的$scope 对象，而没有必要去创建它。
+
+没有必要自己调用HelloController 的构造方法，或者指定何时去调用它。
+
+后面我们还会看到更多不同之处，但是这里已经能够清晰地显示出Angular应用与以前类似的应用在结构上存在巨大的差异。
+
+为什么我们会在设计上做出这种选择，Angular的工作原理又是什么呢？我们来看看Angular从其他地方“偷来”的一些很好的理念。
