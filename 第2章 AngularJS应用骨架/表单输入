@@ -1,0 +1,86 @@
+在Angular中使用表单元素非常方便。正如我们在前面几个例子中看到的，你可以使用ng-model 属性把元素绑定到你的模型属性上。这一机制对于所有标准的表单元素都可以起作用，例如文本框、单选按钮、复选框，等等。我们可以像下面这样把一个复选框绑定到一个属性上：
+<form ng-controller="SomeController">
+  <input type="checkbox" ng-model="youCheckedIt">
+</form>
+
+这样做的含义是：
+
+1 ．当用户选中了复选框之后，SomeController 中$scope 的youCheckedIt的属性就会变成true。而反选复选框会让youCheckedIt 变为false。
+
+2 ．如果你在SomeController中把$scope.youCheckedIt设置为true，那么UI中的复选框将会变成选中状态。设置为false将会反选复选框。
+
+举例来说，当用户做了某件事情的时候，我们希望程序能真正地做出某种动作。对于输入元素来说，你可以使用ng-change 属性来指定一个控制器方法，一旦用户修改了输入值，这个方法就会被调用。我们来做一个简单的计算，帮助消费者计算一下需要付多少钱：
+<form ng-controller="StartUpController">
+  Starting: <input ng-change="computeNeeded()"
+                    ng-model="funding.startingEstimate">
+  Recommendation: {{funding.needed}}
+</form>
+
+对于这个非常简单的例子来说，我们只要把输出文本框的值设置为用户估价的10倍即可。同时，在一开始的时候我们会把文本框的默认值设置为0 ：
+function StartUpController($scope) {
+  $scope.funding = { startingEstimate: 0 };
+  $scope.computeNeeded = function() {
+    $scope.needed = $scope.startingEstimate * 10;
+  };
+}
+
+但是，以上代码所采取的策略有一个潜在的问题，即，只有当用户在文本框中输入值的时候我们才会去计算所需的金额。当用户在这个特定的输入框中输入时，输入框就会正确地刷新。但是，如果还有其他输入框也绑定到模型中的这个属性上，会怎么样呢？如果接收到服务端的数据，导致数据模型进行刷新，又会怎么样呢？
+
+为了能够正确地刷新输入框，而不管它是通过何种途径进行刷新的，我们需要使用$scope 中的$watch() 的函数。在本章后续的内容里将会详细讨论这个watch函数。最基本的一点就是，你可以调用$watch() 函数来监视一个表达式，当这个表达式发生变化时就会调用一个回调函数。
+
+在当前这个例子中，我们需要监视funding.startingEstimate ，当它的值发生变化时就调用computeNeeded() 。下面运用这一技术重写StartUpController ：
+function StartUpController($scope) {
+  $scope.funding = { startingEstimate: 0 };
+  computeNeeded = function() {
+    $scope.funding.needed = $scope.funding.startingEstimate * 10;
+  };
+  $scope.$watch('funding.startingEstimate', computeNeeded);
+}
+
+请注意，需要监视的表达式位于引号中。是的，它是一个字符串。这个字符串会被当作Angular表达式来执行。表达式可以执行一些简单的操作，并且可以访问$scope 对象中的属性。在本章后续的内容中我们将会详细解释表达式相关的内容。
+
+我们还可以监视一个函数的返回值，但是监视funding.startingEstimate 属性是没有用的，因为这个值算出来是0 ，也就是它的初始值，而且这个值永远不会发生变化。
+
+然后，无论何时只要funding.startingEstimate 发生变化，我们的funding.needed就会自动刷新，我们可以编写一个更加简单的模板，示例如下：
+<form ng-controller="StartUpController">
+  Starting: <input ng-model="funding.startingEstimate">
+  Recommendation: {{funding.needed}}
+</form>
+
+在某些情况下，你不想一有变化就立刻做出动作；而是要进行等待，直到用户告诉你他已经准备好了，例如完成订购或者发出一条确认信息之后。
+
+如果你正在使用表单把输入项组织起来，你可以在form自身上使用ng-submit 指令来指定一个函数，当表单提交的时候可以执行这个函数。我们来扩展前面的例子，实现用户点击一个按钮就可以为他所选的商品计算金额：
+<form ng-submit="requestFunding()" ng-controller="StartUpController">
+  Starting: <input ng-change="computeNeeded()" ng-model="startingEstimate">
+  Recommendation: {{needed}}
+  <button>Fund my startup!</button>
+</form>
+function StartUpController($scope) {
+  $scope.computeNeeded = function() {
+    $scope.needed = $scope.startingEstimate * 10;
+  };
+  $scope.requestFunding = function() {
+    window.alert("Sorry, please get more customers first.");
+  };
+}
+
+同时，在提交表单的时候，ng-submit还会自动阻止浏览器执行默认的POST 操作。对于处理其他事件的情况，例如提供非表单提交型的交互，Angular提供了一些事件处理指令，它们类似于浏览器原生的事件属性。对于onclick，可以使用ng-click ；对于ondblclick ，可以使用ng-dblclick ；等等。
+
+我们可以试着实现一个这样的功能：再次扩展开始的那个计算器，为之添加一个复位按钮，这个按钮将会把输入值重置为0 ：
+<form ng-submit="requestFunding()" ng-controller="StartUpController">
+   Starting: <input ng-change="computeNeeded()" ng-model="startingEstimate">
+   Recommendation: {{needed}}
+   <button>Fund my startup!</button>
+   <button ng-click="reset()">Reset</button>
+</form>
+function StartUpController($scope) {
+  $scope.computeNeeded = function() {
+    $scope.needed = $scope.startingEstimate * 10;
+  };
+  $scope.requestFunding = function() {
+    window.alert("Sorry, please get more customers first.");
+  };
+  $scope.reset = function() {
+    $scope.startingEstimate = 0;
+  };
+}
