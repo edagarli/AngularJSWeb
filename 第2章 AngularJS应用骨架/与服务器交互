@@ -1,0 +1,50 @@
+真正的应用需要和真实的服务器进行交互，移动应用和新兴的Chrome桌面应用可能是个例外，但是对于此外的所有应用来说，无论你是想把数据持久化到云端，还是需要与其他用户进行实时交互，都需要让应用与服务器进行交互。
+
+为了实现这一点，Angular提供了一个叫做$http的服务。它提供了一个可扩展的抽象方法列表，使得与服务器的交互更加容易。它支持HTTP、JSONP和CORS方式。它还包含了安全性支持，避免JSON格式的脆弱性和XSRF。它让你可以轻松地转换请求和响应数据，甚至还实现了简单的缓存。
+
+例如，我们打算让购物站点从服务器上获取商品信息，而不是从内存假数据获取。如何编写服务端代码已经超越了本书的范畴，所以，我们仅仅来想象一下，比方说我们已经创建了一个服务器，当查询/products 路径时，它会以JSON格式返回一个商品列表。
+
+返回的响应示例如下：
+[
+  {
+    "id": 0,
+    "title": "Paint pots",
+    "description": "Pots full of paint",
+    "price": 3.95
+  },
+  {
+    "id": 1,
+    "title": "Polka dots",
+    "description": "Dots with that polka groove",
+    "price": 12.95
+  },
+  {
+    "id": 2,
+    "title": "Pebbles",
+    "description": "Just little rocks, really",
+    "price": 6.95
+  }
+  ...etc...
+]
+
+我们可以像下面这样编写查询代码：
+function ShoppingController($scope, $http) {
+  $http.get('/products').success(function(data, status, headers, config) {
+    $scope.items = data;
+  });
+}
+
+然后在模板中这样使用它：
+<body ng-controller="ShoppingController">
+    <h1>Shop!</h1>
+    <table>
+      <tr ng-repeat="item in items">
+        <td>{{item.title}}</td>
+        <td>{{item.description}}</td>
+        <td>{{item.price | currency}}</td>
+      </tr>
+    </table>
+  </div>
+</body>
+
+正如我们前面讲过的，从长远来看，让服务来代理与服务器交互的工作对我们有好处，这个服务可以被多个控制器共享。在本书第5 章中将会讲述这种结构以及$http服务的各种功能。
