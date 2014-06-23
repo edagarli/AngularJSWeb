@@ -1,0 +1,13 @@
+前面曾经提到过这些内容，但是请允许我再重复一下，对于HelloController 还有很多东西不需要我们去编写。例如，进行数据绑定的$scope对象会被自动传递给我们；我们并不需要调用任何函数去创建这个对象。只要把$scope 对象放在HelloController的构造函数里面，然后就可以获取它了。
+
+正如后续章节中会看到的，$scope 对象并不是我们唯一可以获取的东西。如果我们想把数据绑定到用户浏览器中的URL地址上，可以使用$location 对象，只要把$location对象放到我们的构造函数中即可，示例如下：
+function HelloController($scope, $location) {
+  $scope.greeting = { text: 'Hello' };
+  // 这里可以使用$location 对象来做一些很酷的事情...
+}
+
+这种神奇效果是通过Angular的依赖注入机制实现的。依赖注入让我们遵守这样一种开发风格：我们的类只是简单地获取它们所需要的东西，而不需要创建那些它们所依赖的东西。
+
+这种风格遵循了一种叫做迪米特法则（Law of Demeter，http://en.wikipedia.org/wiki/Law_of_Demeter ）的设计模式，也叫做最少知识原则。既然HelloController 的职责是设置greeting模型的内部状态，那么用这一法则就意味着，它不应该去操心任何其他东西，例如$scope是如何创建的，以及到哪里找这个对象等。
+
+这一特性并非仅仅对Angular框架所创建的对象有效，你可以以同样的方式编写所有其他代码。
