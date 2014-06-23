@@ -1,0 +1,5 @@
+为了使用Angular，所有应用都必须首先做两件事情：
+
+1.加载angular.js库。
+
+2.使用ng-app指令告诉Angular应该管理DOM中的哪一部分。
