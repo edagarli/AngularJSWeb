@@ -22,7 +22,7 @@ function HelloController($scope) {
 
 使用任意浏览器打开hello.html，然后我们就可以看到如图1-1所示的效果：
 
-<img src="http://www.2cto.com/uploadfile/2013/1202/20131202042304371.jpg"/> 
+Hello, World
 
 与目前广泛使用的一些方法相比，这里有一些非常有趣的东西需要注意：
 
